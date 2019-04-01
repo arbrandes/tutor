@@ -70,6 +70,7 @@ def render_str(config, text):
     Return:
         substituted (str)
     """
+    jinja2.environment.DEFAULT_FILTERS['to_json'] = utils.to_json
     template = jinja2.Template(text, undefined=jinja2.StrictUndefined)
     try:
         return template.render(

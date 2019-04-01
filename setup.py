@@ -36,6 +36,7 @@ setup(
         "jinja2",
         "kubernetes",
         "pyyaml>=4.2b1",
+        "simplejson"
     ],
     entry_points={
         'console_scripts': [

@@ -88,6 +88,9 @@ def restart(root, service):
     command = ["restart"]
     if service == "openedx":
         command += ["lms", "cms", "lms_worker", "cms_worker"]
+        config = tutor_config.load(root)
+        if config["ACTIVATE_HASTEXO_XBLOCK"]:
+            command += ["hastexo-xblock-suspender", "hastexo-xblock-reaper"]
     elif service != "all":
         command += [service]
     config = tutor_config.load(root)

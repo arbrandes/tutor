@@ -5,6 +5,7 @@ ACTIVATE_MONGODB: true
 ACTIVATE_MYSQL: true
 ACTIVATE_RABBITMQ: true
 ACTIVATE_SMTP: true
+ACTIVATE_HASTEXO_XBLOCK: true
 ANDROID_RELEASE_STORE_PASSWORD: "android store password"
 ANDROID_RELEASE_KEY_PASSWORD: "android release key password"
 ANDROID_RELEASE_KEY_ALIAS: "android release key alias"
@@ -20,6 +21,8 @@ DOCKER_IMAGE_ELASTICSEARCH: "elasticsearch:1.5.2"
 DOCKER_IMAGE_NGINX: "nginx:1.13"
 DOCKER_IMAGE_RABBITMQ: "rabbitmq:3.6.10"
 DOCKER_IMAGE_SMTP: "namshi/smtp:latest"
+DOCKER_IMAGE_GUACD: "guacamole/guacd:0.9.13-incubating"
+DOCKER_IMAGE_HASTEXO_XBLOCK: "citycloud/hastexo-xblock:2.6.1"
 DOCKER_REGISTRY: ""
 LOCAL_PROJECT_NAME: "tutor_local"
 ELASTICSEARCH_HOST: "elasticsearch"
@@ -50,3 +53,5 @@ WEB_PROXY: false
 XQUEUE_AUTH_USERNAME: "lms"
 XQUEUE_MYSQL_DATABASE: "xqueue"
 XQUEUE_MYSQL_USERNAME: "xqueue"
+ADDL_INSTALLED_APPS: []
+XBLOCK_SETTINGS: {}

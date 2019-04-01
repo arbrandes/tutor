@@ -3,6 +3,7 @@ import random
 import shutil
 import string
 import subprocess
+import simplejson
 
 from . import exceptions
 from . import fmt
@@ -10,6 +11,9 @@ from . import fmt
 
 def random_string(length):
     return "".join([random.choice(string.ascii_letters + string.digits) for _ in range(length)])
+
+def to_json(value):
+    return simplejson.dumps(value)
 
 def common_domain(d1, d2):
     """

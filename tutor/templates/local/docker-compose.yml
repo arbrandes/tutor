@@ -45,6 +45,18 @@ services:
       - ../../data/elasticsearch:/usr/share/elasticsearch/data
   {% endif %}
 
+  {% if ACTIVATE_HASTEXO_XBLOCK %}
+  guacd:
+    image: {{ DOCKER_REGISTRY }}{{ DOCKER_IMAGE_GUACD }}
+    restart: unless-stopped
+
+  hastexo-xblock:
+    image: {{ DOCKER_REGISTRY }}{{ DOCKER_IMAGE_HASTEXO_XBLOCK }}
+    restart: unless-stopped
+    depends_on:
+      - guacd
+  {% endif %}
+
   openedx-assets:
     image: {{ DOCKER_REGISTRY }}{{ DOCKER_IMAGE_OPENEDX }}
     volumes:
@@ -67,6 +79,7 @@ services:
       - lms
       - cms
       {% if ACTIVATE_NOTES %}- notes{% endif %}
+      {% if ACTIVATE_HASTEXO_XBLOCK %}- hastexo-xblock{% endif %}
 
   {% if ACTIVATE_RABBITMQ %}
   rabbitmq:
@@ -169,6 +182,42 @@ services:
       - ../../data/cms:/openedx/data
     depends_on:
       - cms
+
+  {% if ACTIVATE_HASTEXO_XBLOCK %}
+  hastexo-xblock-suspender:
+    image: {{ DOCKER_REGISTRY }}{{ DOCKER_IMAGE_OPENEDX }}
+    environment:
+      SERVICE_VARIANT: lms
+      SETTINGS: ${EDX_PLATFORM_SETTINGS:-tutor.production}
+    command: ./manage.py lms suspender
+    restart: unless-stopped
+    volumes:
+      - ../apps/openedx/settings/lms/:/openedx/edx-platform/lms/envs/tutor/
+      - ../apps/openedx/settings/cms/:/openedx/edx-platform/cms/envs/tutor/
+      - ../apps/openedx/config/:/openedx/config/
+      - ../../data/lms:/openedx/data
+    depends_on:
+      - lms
+      {% if ACTIVATE_MYSQL %}- mysql{% endif %}
+      {% if ACTIVATE_RABBITMQ %}- rabbitmq{% endif %}
+
+  hastexo-xblock-reaper:
+    image: {{ DOCKER_REGISTRY }}{{ DOCKER_IMAGE_OPENEDX }}
+    environment:
+      SERVICE_VARIANT: lms
+      SETTINGS: ${EDX_PLATFORM_SETTINGS:-tutor.production}
+    command: ./manage.py lms reaper
+    restart: unless-stopped
+    volumes:
+      - ../apps/openedx/settings/lms/:/openedx/edx-platform/lms/envs/tutor/
+      - ../apps/openedx/settings/cms/:/openedx/edx-platform/cms/envs/tutor/
+      - ../apps/openedx/config/:/openedx/config/
+      - ../../data/lms:/openedx/data
+    depends_on:
+      - lms
+      {% if ACTIVATE_MYSQL %}- mysql{% endif %}
+      {% if ACTIVATE_RABBITMQ %}- rabbitmq{% endif %}
+  {% endif %}
 
   {% if ACTIVATE_NOTES %}
   ############# Notes: backend store for edX Student Notes

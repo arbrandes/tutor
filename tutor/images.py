@@ -11,7 +11,8 @@ def images():
     pass
 
 OPENEDX_IMAGES = ["openedx", "forum", "notes", "xqueue", "android"]
-VENDOR_IMAGES = ["elasticsearch", "memcached", "mongodb", "mysql", "nginx", "rabbitmq", "smtp"]
+VENDOR_IMAGES = ["elasticsearch", "memcached", "mongodb", "mysql", "nginx",
+                 "rabbitmq", "smtp", "guacd", "hastexo-xblock"]
 argument_openedx_image = click.argument(
     "image", type=click.Choice(["all"] + OPENEDX_IMAGES),
 )
@@ -97,6 +98,9 @@ def vendor_image_names(config, image):
             images.remove('mysql')
         if not config['ACTIVATE_RABBITMQ']:
             images.remove('rabbitmq')
+        if not config['ACTIVATE_HASTEXO_XBLOCK']:
+            images.remove('guacd')
+            images.remove('hastexo-xblock')
         return images
     return [image]
 

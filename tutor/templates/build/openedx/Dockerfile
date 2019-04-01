@@ -10,7 +10,7 @@ RUN apt update && \
     # openedx requirements
     gettext gfortran graphviz graphviz-dev libffi-dev libfreetype6-dev libgeos-dev libjpeg8-dev liblapack-dev libpng12-dev libsqlite3-dev libxml2-dev libxmlsec1-dev libxslt1-dev lynx nodejs npm ntp pkg-config \
     # Our requirements
-    mysql-client \
+    mysql-client iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 # Dockerize will be useful to wait for mysql DB availability
