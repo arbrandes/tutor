@@ -49,6 +49,53 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: cms-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cms-worker
+  template:
+    metadata:
+      labels:
+        app: cms-worker
+    spec:
+      containers:
+        - name: cms
+          image: {{ DOCKER_REGISTRY }}{{ DOCKER_IMAGE_OPENEDX }}
+          env:
+            - name: SERVICE_VARIANT
+              value: cms
+            - name: C_FORCE_ROOT
+              value: "1"
+          args: ["./manage.py", "cms", "celery", "worker", "--loglevel=info", "--hostname=edx.cms.core.default.%%h", "--maxtasksperchild", "100"]
+          volumeMounts:
+            - mountPath: /openedx/edx-platform/lms/envs/tutor/
+              name: settings-lms
+            - mountPath: /openedx/edx-platform/cms/envs/tutor/
+              name: settings-cms
+            - mountPath: /openedx/config
+              name: config
+            - mountPath: /openedx/data
+              name: data
+      volumes:
+        - name: settings-lms
+          configMap:
+            name: openedx-settings-lms
+        - name: settings-cms
+          configMap:
+            name: openedx-settings-cms
+        - name: config
+          configMap:
+            name: openedx-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: cms-data
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: forum
 spec:
   replicas: 1
@@ -102,6 +149,53 @@ spec:
             - mountPath: /openedx/data
               name: data
           imagePullPolicy: Always
+      volumes:
+        - name: settings-lms
+          configMap:
+            name: openedx-settings-lms
+        - name: settings-cms
+          configMap:
+            name: openedx-settings-cms
+        - name: config
+          configMap:
+            name: openedx-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: lms-data
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lms-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lms-worker
+  template:
+    metadata:
+      labels:
+        app: lms-worker
+    spec:
+      containers:
+        - name: lms-worker
+          image: {{ DOCKER_REGISTRY }}{{ DOCKER_IMAGE_OPENEDX }}
+          env:
+            - name: SERVICE_VARIANT
+              value: lms
+            - name: C_FORCE_ROOT
+              value: "1"
+          args: ["./manage.py", "lms", "celery", "worker", "--loglevel=info", "--hostname=edx.lms.core.default.%%h", "--maxtasksperchild", "100"]
+          volumeMounts:
+            - mountPath: /openedx/edx-platform/lms/envs/tutor/
+              name: settings-lms
+            - mountPath: /openedx/edx-platform/cms/envs/tutor/
+              name: settings-cms
+            - mountPath: /openedx/config
+              name: config
+            - mountPath: /openedx/data
+              name: data
       volumes:
         - name: settings-lms
           configMap:
