@@ -145,3 +145,31 @@ spec:
   selector:
     app: smtp
 {% endif %}
+
+{% if ACTIVATE_HASTEXO_XBLOCK %}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guacd
+spec:
+  type: NodePort
+  ports:
+    - port: 4822
+      protocol: TCP
+  selector:
+    app: guacd
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hastexo-xblock
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      protocol: TCP
+  selector:
+    app: hastexo-xblock
+{% endif %}
