@@ -35,6 +35,10 @@ def start(root):
     kubectl_no_fail("create", "-f", tutor_env.pathjoin(root, "k8s", "namespace.yml"))
 
     kubectl("create", "configmap", "nginx-config", "--from-file", tutor_env.pathjoin(root, "apps", "nginx"))
+    if config['ACTIVATE_HTTPS']:
+        fullchain = tutor_env.pathjoin(root, "apps", "letsencrypt", "live", config['LMS_HOST'], "fullchain.pem")
+        privkey = tutor_env.pathjoin(root, "apps", "letsencrypt", "live", config['LMS_HOST'], "privkey.pem")
+        kubectl("create", "secret", "generic", "letsencrypt-cert", "--from-file", fullchain, "--from-file", privkey)
     if config['ACTIVATE_MYSQL']:
         kubectl("create", "configmap", "mysql-config", "--from-env-file", tutor_env.pathjoin(root, "apps", "mysql", "auth.env"))
     kubectl("create", "configmap", "openedx-settings-lms", "--from-file", tutor_env.pathjoin(root, "apps", "openedx", "settings", "lms"))

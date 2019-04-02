@@ -399,6 +399,10 @@ spec:
               name: openedx-staticfiles
             - mountPath: /openedx/data/lms
               name: data
+{% if ACTIVATE_HTTPS %}
+            - mountPath: /etc/letsencrypt/live/{{ LMS_HOST }}
+              name: cert
+{% endif %}
           ports:
             - containerPort: 80
               name: http-port
@@ -414,6 +418,11 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: lms-data
+{% if ACTIVATE_HTTPS %}
+        - name: cert
+          secret:
+            secretName: letsencrypt-cert
+{% endif %}
 
 {% if ACTIVATE_RABBITMQ %}
 ---
