@@ -46,9 +46,14 @@ def start(root):
     kubectl("create", "configmap", "openedx-config", "--from-file", tutor_env.pathjoin(root, "apps", "openedx", "config"))
 
     kubectl("create", "-f", tutor_env.pathjoin(root, "k8s", "volumes.yml"))
-    kubectl("create", "-f", tutor_env.pathjoin(root, "k8s", "ingress.yml"))
+    if config['ACTIVATE_INGRESS']:
+        kubectl("create", "-f", tutor_env.pathjoin(root, "k8s", "ingress.yml"))
     kubectl("create", "-f", tutor_env.pathjoin(root, "k8s", "services.yml"))
     kubectl("create", "-f", tutor_env.pathjoin(root, "k8s", "deployments.yml"))
+
+@click.command(help="Forward HTTP/S ports to nginx service")
+def portforward():
+    kubectl("port-forward", "--address", "0.0.0.0", "svc/nginx", "80:80", "443:443")
 
 @click.command(help="Stop a running platform")
 def stop():
@@ -172,6 +177,7 @@ def run_bash(root, service, command):
 
 k8s.add_command(quickstart)
 k8s.add_command(start)
+k8s.add_command(portforward)
 k8s.add_command(stop)
 k8s.add_command(delete)
 k8s.add_command(databases)
